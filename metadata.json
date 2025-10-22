@@ -1,0 +1,7 @@
+{
+  "name": "AI Lead IQ",
+  "description": "A powerful dashboard for managing and analyzing sales leads with AI-driven insights. It provides a comprehensive view of your lead pipeline, engagement metrics, and conversion predictions.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

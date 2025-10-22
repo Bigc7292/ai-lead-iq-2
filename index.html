@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILeadIQ - Autonomous Sales Workflow</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define a custom font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* Critical Fix: Ensure full viewport height and background color */
+        html {
+            height: 100%;
+            background-color: #0d1117; /* Ensure background color covers all space */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Dark background for premium look */
+            color: #ffffff;
+            overflow-x: hidden; /* Prevent horizontal scroll due to animations */
+            min-height: 100%; /* Critical Fix: Force minimum height to fill viewport */
+        }
+        /* Gradient background animation */
+        .animated-bg {
+            background: linear-gradient(-45deg, #4f46e5, #8b5cf6, #10b981, #3b82f6);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Custom scrollbar styling for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background-color: #4f46e5; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background-color: #1f2937; }
+
+        /* Style for the success message to slide in */
+        .slide-in {
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- NEW PHONE ANIMATION STYLES --- */
+        .phone-mockup {
+            width: 280px;
+            height: 560px;
+            border: 4px solid #3730a3; /* Darker indigo */
+            border-radius: 40px;
+            background-color: #1e293b; /* Slate-800 */
+            box-shadow: 0 0 20px #4f46e566;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 60px;
+            height: 8px;
+            background-color: #3730a3;
+            border-radius: 4px;
+        }
+        .wave {
+            position: absolute;
+            border: 2px solid #8b5cf6;
+            border-radius: 50%;
+            animation: pulse 4s infinite ease-out;
+            opacity: 0;
+            box-shadow: 0 0 10px #8b5cf6, inset 0 0 10px #8b5cf6;
+        }
+        .wave.wave-1 { animation-delay: 0s; }
+        .wave.wave-2 { animation-delay: 1s; }
+        .wave.wave-3 { animation-delay: 2s; }
+
+        @keyframes pulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom": "https://aistudiocdn.com/react-dom@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.26.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.3.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="min-h-screen">
+
+    <div id="pre-auth-view">
+        <!-- Navbar -->
+        <header class="p-4 flex justify-between items-center z-10 relative cursor-default">
+            <img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjUwIDI4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImxvZ29BR3JhZGllbnQiIHgxPSIwLjUiIHkxPSIwIiB4Mj0iMC41IiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzZFRTdCNyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzNCODJGNiIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJsb2dvU3dvb3NoR3JhZGllbnQiIHgxPSIwIiB5MT0iMC41IiB4Mj0iMSIgeTI9IjAuNSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM4QkRGNCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzI1NjNFQiIvPjwvbGluZWFyR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSJsb2dvU3BoZXJlR3JhZGllbnQiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNBN0YzRDAiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzQjgyRjYiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Zz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMjUgMTAgTDEwIDIyMCBIMjQwIFogTTEyNSA4MCBMMTgwIDIyMCBINzAgWiIgZmlsbD0idXJsKCNsb2dvQUdyYWRpZW50KSIgLz48cGF0aCBkPSJNMzAgMTUwIEMgOTAgMTIwLCAxNjAgMTYwLCAyMTAgMTQwIEwgMjAwIDE2NSBDIDE1MCAxODUsIDgwIDE0NSwgMjAgMTc1IFoiIGZpbGw9InVybCgjbG9nb1N3b29zaEdyYWRpZW50KSIgLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxMzAiIHI9IjIwIiBmaWxsPSJ1cmwoI2xvZ29TcGhlcmVHcmFkaWVudCkiIC8+PC9nPjx0ZXh0IHg9IjEyNSIgeT0iMjY1IiBmb250LWZhbWlseT0iSW50ZXIsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSI4MDAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iLTEiPkFJTEVBRElRPC90ZXh0Pjwvc3ZnPg==" alt="AILeadIQ Logo" class="h-12 w-auto">
+            <div class="space-x-4">
+                <button class="text-white hover:text-indigo-400 transition">Sign In</button>
+                <button class="px-4 py-2 bg-indigo-600 rounded-full font-semibold hover:bg-indigo-700 transition shadow-lg">
+                    Start Free Trial
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="relative z-0">
+            <div class="container mx-auto px-6 py-12 md:flex items-center justify-between min-h-[calc(100vh-80px)]">
+
+                <!-- Left: Hero Text & Lead Capture -->
+                <div class="md:w-1/2 mb-12 md:mb-0 text-center md:text-left">
+                    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight tracking-tighter">
+                        <span class="animated-text-clip">Autonomous Sales</span>
+                        <br>
+                        <span class="block mt-2 text-transparent bg-clip-text animated-bg">Workflows.</span>
+                    </h1>
+                    <p class="mt-6 text-xl text-gray-400 max-w-lg mx-auto md:mx-0">
+                        Deploy multilingual AI Agents to qualify leads, book meetings, and manage follow-up across all channels—instantly.
+                    </p>
+
+                    <!-- NEW LEAD CAPTURE FORM -->
+                    <div class="mt-8 bg-gray-800/60 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-indigo-700/50 max-w-lg mx-auto md:mx-0 text-left">
+                        <h3 class="text-xl font-bold mb-4 text-indigo-400">Test Drive Our AI Now: We'll Call You!</h3>
+                        <form onsubmit="startAICall(event)">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <input type="text" id="lead-name" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-indigo-500 text-white placeholder-gray-400" placeholder="Your Name" required>
+                                <input type="tel" id="lead-number" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-indigo-500 text-white placeholder-gray-400" placeholder="Phone Number" required>
+                                <input type="email" id="lead-email" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-indigo-500 text-white placeholder-gray-400" placeholder="Email" required>
+                                <select id="lead-industry" class="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-indigo-500 text-white placeholder-gray-400" required>
+                                    <option value="" disabled selected>Select Industry</option>
+                                    <option value="Real Estate">Real Estate</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Tech">Technology</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full mt-4 py-3 bg-indigo-600 rounded-xl text-lg font-bold hover:bg-indigo-700 transition transform hover:scale-[1.01] shadow-lg shadow-indigo-500/30">
+                                Call Me Now! (AI Initiated)
+                            </button>
+                        </form>
+                        <div id="call-status-message" class="mt-4 text-center hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Right: Visuals & Authentication Card -->
+                <div class="md:w-1/2 flex items-center justify-center relative mt-12 md:mt-0">
+                    <!-- NEW ANIMATION -->
+                    <div class="hidden md:block absolute w-full h-full flex items-center justify-center opacity-50">
+                        <div class="phone-mockup">
+                            <div class="wave wave-1" style="width: 200px; height: 200px;"></div>
+                            <div class="wave wave-2" style="width: 300px; height: 300px;"></div>
+                            <div class="wave wave-3" style="width: 400px; height: 400px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Authentication Card (React Mount Point) -->
+                    <div id="root" class="w-full max-w-sm bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-indigo-600/60 transform transition-all duration-500 cursor-default relative z-10">
+                        <!-- The React application will render here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtle Background Animation Element -->
+            <div class="absolute inset-0 z-[-1] opacity-20 pointer-events-none">
+                <div class="h-full w-full animated-bg rounded-full" style="transform: scale(1.5); filter: blur(100px);"></div>
+            </div>
+        </main>
+
+        <script>
+            const callStatusMessage = document.getElementById('call-status-message');
+
+            // --- LEAD CAPTURE & AI CALL LOGIC ---
+            function startAICall(event) {
+                event.preventDefault();
+                const name = document.getElementById('lead-name').value;
+                const number = document.getElementById('lead-number').value;
+                const email = document.getElementById('lead-email').value;
+                const industry = document.getElementById('lead-industry').value;
+
+                // Simple validation check (should be done on backend too)
+                if (!name || !number || !email || !industry) {
+                    callStatusMessage.classList.remove('hidden');
+                    callStatusMessage.classList.remove('text-green-400');
+                    callStatusMessage.classList.add('text-red-400');
+                    callStatusMessage.innerHTML = 'Please fill out all fields.';
+                    return;
+                }
+
+                // Simulate sending data to backend to start AI workflow
+                console.log(`Sending lead data to backend: Name=${name}, Number=${number}, Industry=${industry}`);
+
+                // Update UI with success message
+                callStatusMessage.classList.remove('hidden');
+                callStatusMessage.classList.remove('text-red-400');
+                callStatusMessage.classList.add('text-green-400', 'slide-in');
+                callStatusMessage.innerHTML = `<span class="font-bold">Call Initiated!</span> Our AI Agent is calling ${number} right now. Answer the phone!`;
+
+                // Reset form after simulated submission
+                event.target.reset();
+            }
+        </script>
+    </div>
+
+    <div id="post-auth-view" style="display: none;">
+        <!-- The main application will be rendered here by React after login -->
+    </div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
