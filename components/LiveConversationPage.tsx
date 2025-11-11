@@ -177,17 +177,17 @@ const LiveConversationPage: React.FC = () => {
                 <div className="space-y-4">
                     <div>
                         <label htmlFor="voiceTone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI Voice Tone</label>
-                        <select id="voiceTone" value={voice} onChange={e => setVoice(e.target.value)} disabled={status !== 'idle'} className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50">
+                        <select id="voiceTone" value={voice} onChange={e => setVoice(e.target.value)} disabled={status !== 'idle'} className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50">
                            {VOICE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
                         </select>
                     </div>
                     <div>
                         <label htmlFor="userRole" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Your Role</label>
-                        <textarea id="userRole" rows={3} value={userRole} onChange={e => setUserRole(e.target.value)} disabled={status !== 'idle'} className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50"/>
+                        <textarea id="userRole" rows={3} value={userRole} onChange={e => setUserRole(e.target.value)} disabled={status !== 'idle'} className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50"/>
                     </div>
                     <div>
                         <label htmlFor="openingPrompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI's Opening Line</label>
-                        <textarea id="openingPrompt" rows={4} value={openingPrompt} onChange={e => setOpeningPrompt(e.target.value)} disabled={status !== 'idle'} className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50"/>
+                        <textarea id="openingPrompt" rows={4} value={openingPrompt} onChange={e => setOpeningPrompt(e.target.value)} disabled={status !== 'idle'} className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:opacity-50"/>
                     </div>
                 </div>
             </div>
