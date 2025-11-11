@@ -1,5 +1,5 @@
 import React from 'react';
-import { DashboardIcon, LeadsIcon, SettingsIcon, SparklesIcon, CampaignsIcon, CallLogsIcon, WorkflowsIcon, DocumentsIcon, TeamIcon, ChevronDownIcon, ShieldIcon, XIcon, PhoneWaveIcon } from './icons';
+import { DashboardIcon, LeadsIcon, SettingsIcon, SparklesIcon, CampaignsIcon, CallLogsIcon, DocumentsIcon, TeamIcon, ChevronDownIcon, ShieldIcon, XIcon } from './icons';
 import { User } from '../types';
 import { logoDataURI } from '../data/logo';
 
@@ -17,9 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, user, on
         { icon: LeadsIcon, label: 'Leads', page: 'Leads' },
         { icon: CampaignsIcon, label: 'Campaigns', page: 'Campaigns' },
         { icon: CallLogsIcon, label: 'Call Logs', page: 'CallLogs' },
-        { icon: PhoneWaveIcon, label: 'Live Conversation', page: 'LiveConversation' },
-        { icon: SparklesIcon, label: 'AI Assistant', page: 'AIAssistant' },
-        { icon: WorkflowsIcon, label: 'Workflows', page: 'Workflows' },
+        { icon: SparklesIcon, label: 'Your Ai', page: 'YourAi' },
         { icon: DocumentsIcon, label: 'Documents', page: 'Documents' },
         { icon: TeamIcon, label: 'Team', page: 'Team' },
     ];
