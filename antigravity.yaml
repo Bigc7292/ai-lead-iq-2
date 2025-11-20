@@ -1,0 +1,52 @@
+# antigravity.yaml
+# Enhanced configuration for deploying to Google Antigravity
+# Incorporates best practices for security, performance, and reliability.
+
+version: 1
+
+# Environment configuration
+# Specifies the runtime environment for the build and deployment.
+env:
+  NODE_VERSION: "20"
+
+# Secret Management (Placeholder)
+# It'''s a best practice to manage API keys and other secrets securely.
+# Antigravity would likely integrate with a secret manager.
+# secrets:
+#   - name: API_KEY
+#   - name: DATABASE_URL
+
+# Build Pipeline
+# Defines the steps to build the application from source.
+build:
+  - name: Install Dependencies
+    # Caching is enabled for node_modules to speed up subsequent builds.
+    run: npm install
+
+  - name: Security Audit
+    # Run a security vulnerability scan on dependencies.
+    # Fails the build if critical vulnerabilities are found.
+    run: npm audit --audit-level=critical
+
+  - name: Run Linter
+    # Ensures code quality and consistency.
+    run: echo "No linter configured, skipping." # Replace with your linting command, e.g., '''npm run lint'''
+
+  - name: Run Tests
+    # Verifies application functionality before deployment.
+    run: echo "No tests configured, skipping." # Replace with your test command, e.g., '''npm run test'''
+
+  - name: Build Application
+    # Compiles the application for production.
+    run: npm run build
+
+# Deployment Configuration
+# Specifies how the built application should be served.
+deploy:
+  appType: client
+  path: dist # The output directory from the '''vite build''' command.
+
+# Caching Configuration
+# Speeds up the build process by caching directories between runs.
+cache:
+  - path: node_modules
