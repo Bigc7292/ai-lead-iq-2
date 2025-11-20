@@ -1,0 +1,74 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/monospace-13/backend:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/monospace-13/backend:latest'
+      - './backend'
+    id: 'build-image'
+
+  # Step 2: Push the Docker image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/monospace-13/backend:$COMMIT_SHA'
+    id: 'push-image'
+    waitFor: ['build-image']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/monospace-13/backend:latest'
+    id: 'push-latest'
+    waitFor: ['build-image']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'backend'
+      - '--image'
+      - 'gcr.io/monospace-13/backend:$COMMIT_SHA'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'NODE_ENV=production'
+      - '--set-env-vars'
+      - 'GOOGLE_CLOUD_PROJECT=monospace-13'
+      # We don't need to mount secrets as env vars anymore because the app fetches them directly
+      # However, the service account needs 'Secret Accessor' role
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--min-instances'
+      - '1'
+      - '--timeout'
+      - '60'
+      - '--port'
+      - '8080'
+    id: 'deploy-to-cloud-run'
+    waitFor: ['push-image']
+
+# Store images in Google Container Registry
+images:
+  - 'gcr.io/monospace-13/backend:$COMMIT_SHA'
+  - 'gcr.io/monospace-13/backend:latest'
+
+# Build configuration
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout for entire build
+timeout: '1200s'

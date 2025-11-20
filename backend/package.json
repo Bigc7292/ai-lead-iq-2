@@ -1,0 +1,48 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "worker": "node src/workers/batchCallWorker.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "secrets:setup": "node scripts/setup-secrets.js",
+    "secrets:verify": "node scripts/verify-secrets.js",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:json": "npm audit --json > audit-report.json",
+    "lint": "echo \"ESLint will be configured in Sprint 3\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "AI-powered real estate lead management system with voice outreach capabilities",
+  "dependencies": {
+    "@google-cloud/secret-manager": "^6.1.1",
+    "@google/generative-ai": "^0.24.1",
+    "@playwright/test": "^1.49.0",
+    "@supabase/supabase-js": "^2.84.0",
+    "@types/jest": "^30.0.0",
+    "axios": "^1.13.2",
+    "bullmq": "^5.64.0",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.0.0",
+    "ioredis": "^5.8.2",
+    "jest": "^30.2.0",
+    "joi": "^17.13.0",
+    "jsonwebtoken": "^9.0.2",
+    "supertest": "^7.1.4",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  }
+}

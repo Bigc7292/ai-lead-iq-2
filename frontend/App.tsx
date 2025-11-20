@@ -10,8 +10,6 @@ import { getLeadInsight } from './services/geminiService';
 import LeadDetailPage from './components/LeadDetailPage';
 import CampaignsPage from './components/CampaignsPage';
 import CallLogsPage from './components/CallLogsPage';
-import AIAssistantPage from './components/AIAssistantPage';
-import WorkflowsPage from './components/WorkflowsPage';
 import SettingsPage from './components/SettingsPage';
 import AddLeadModal from './components/AddLeadModal';
 import CreateWorkflowModal from './components/CreateWorkflowModal';
@@ -21,7 +19,7 @@ import SignUpPage from './components/SignUpPage';
 import CampaignDetailPage from './components/CampaignDetailPage';
 import CreateCampaignModal from './components/CreateCampaignModal';
 import EditCallLogModal from './components/EditCallLogModal';
-import LiveConversationPage from './components/LiveConversationPage';
+import YourAiPage from './components/YourAiPage';
 
 
 const App: React.FC = () => {
@@ -171,9 +169,7 @@ const App: React.FC = () => {
             'Leads': { title: 'Leads', subTitle: "Manage your sales leads", component: <LeadsPage onViewLead={handleViewLead} onAddLead={() => setIsAddLeadModalOpen(true)} /> },
             'Campaigns': { title: 'Campaigns', subTitle: "Manage your outreach campaigns", component: <CampaignsPage onViewCampaign={handleViewCampaign} onCreateCampaign={() => setIsCreateCampaignModalOpen(true)} /> },
             'CallLogs': { title: 'Call Logs', subTitle: "View and analyze your call history", component: <CallLogsPage /> },
-            'LiveConversation': { title: 'Live AI Conversation', subTitle: "Test your AI agent with a real-time voice conversation", component: <LiveConversationPage /> },
-            'AIAssistant': { title: 'AI Assistant', subTitle: "Get AI-powered help with scripts, emails, and sales strategies", component: <AIAssistantPage /> },
-            'Workflows': { title: 'Workflows', subTitle: "Automate your sales processes with intelligent workflows", component: <WorkflowsPage onCreateWorkflow={() => setIsCreateWorkflowModalOpen(true)} /> },
+            'YourAi': { title: 'Your AI', subTitle: "Supercharge your sales with AI-powered tools", component: <YourAiPage /> },
             'Team': { title: 'Team', subTitle: "Manage your team members", component: <div className="text-white">Team Page Coming Soon</div> },
             'Documents': { title: 'Documents', subTitle: "Manage your documents", component: <div className="text-white">Documents Page Coming Soon</div> },
             'Settings': { title: 'Settings', subTitle: "Manage your company settings", component: <SettingsPage user={currentUser} /> },

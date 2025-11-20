@@ -1,0 +1,481 @@
+openapi: 3.0.0
+info:
+  title: AI Lead IQ API
+  description: REST API for AI-powered real estate lead management with voice outreach capabilities
+  version: 1.0.0
+  contact:
+    name: AI Lead IQ Support
+    email: support@aileadiq.com
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://api.aileadiq.com/v1
+    description: Production server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT token for authenticated requests. Use: Authorization: Bearer {token}"
+
+  schemas:
+    Lead:
+      type: object
+      required:
+        - first_name
+        - last_name
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+        property_type:
+          type: string
+          example: "house"
+        budget:
+          type: number
+          example: 500000
+        timeline:
+          type: string
+          example: "3 months"
+        score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          example: 0.85
+          description: "AI-generated lead quality score (0.0 = lowest, 1.0 = highest)"
+        status:
+          type: string
+          enum: [new, contacted, qualified, unqualified, nurturing, closed_won, closed_lost]
+          example: "new"
+        assigned_to:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    BatchJobRequest:
+      type: object
+      required:
+        - lead_ids
+      properties:
+        lead_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 1000
+          example: ["123e4567-e89b-12d3-a456-426614174000", "223e4567-e89b-12d3-a456-426614174001"]
+        options:
+          type: object
+          properties:
+            voiceId:
+              type: string
+              example: "professional_female"
+            callScript:
+              type: string
+              example: "Hello [FIRST_NAME], this is AI Lead IQ..."
+
+    BatchJobResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+          example: "batch-1234567890-test"
+        status:
+          type: string
+          enum: [queued, active, completed, failed]
+          example: "queued"
+        totalLeads:
+          type: number
+          example: 100
+        createdAt:
+          type: string
+          format: date-time
+        estimatedDuration:
+          type: number
+          description: "Estimated duration in seconds"
+          example: 3000
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+            details:
+              type: object
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+
+  /leads:
+    get:
+      summary: Get all leads with pagination and filtering
+      tags:
+        - Leads
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: min_score
+          in: query
+          schema:
+            type: number
+        - name: max_score
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: List of leads with metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Lead'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total_pages:
+                        type: integer
+                      score_avg:
+                        type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new lead with AI scoring
+      tags:
+        - Leads
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                phone:
+                  type: string
+                property_type:
+                  type: string
+                budget:
+                  type: number
+                timeline:
+                  type: string
+      responses:
+        '201':
+          description: Lead created and scored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Lead'
+                  meta:
+                    type: object
+                    properties:
+                      ai_scored:
+                        type: boolean
+                      score:
+                        type: number
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /leads/{id}:
+    get:
+      summary: Get a specific lead by ID
+      tags:
+        - Leads
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lead details (PII masked if not authorized)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Lead'
+                  meta:
+                    type: object
+                    properties:
+                      pii_visible:
+                        type: boolean
+        '404':
+          description: Lead not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update a lead
+      tags:
+        - Leads
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                status:
+                  type: string
+                timeline:
+                  type: string
+      responses:
+        '200':
+          description: Lead updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Lead'
+        '403':
+          description: Not authorized to update this lead
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a lead (admin only)
+      tags:
+        - Leads
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lead deleted successfully
+        '403':
+          description: Only admins can delete leads
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /batch-calls:
+    post:
+      summary: Create a batch call job for multiple leads
+      tags:
+        - Batch Calls
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchJobRequest'
+      responses:
+        '201':
+          description: Batch job created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/BatchJobResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded (10 requests per hour)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      summary: Get all batch jobs for authenticated user
+      tags:
+        - Batch Calls
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: List of batch jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BatchJobResponse'
+
+  /batch-calls/{jobId}:
+    get:
+      summary: Get batch job status and progress
+      tags:
+        - Batch Calls
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job status and progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+                      status:
+                        type: string
+                      progress:
+                        type: object
+                        properties:
+                          percent:
+                            type: number
+                          completed:
+                            type: number
+                          failed:
+                            type: number
+                          total:
+                            type: number
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+tags:
+  - name: Leads
+    description: Lead management operations
+  - name: Batch Calls
+    description: Batch voice call operations

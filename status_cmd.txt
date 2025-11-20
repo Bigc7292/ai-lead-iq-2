@@ -1,0 +1,61 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .gitignore
+	deleted:    App.tsx
+	deleted:    README.md
+	deleted:    components/AIAssistantPage.tsx
+	deleted:    components/AddLeadModal.tsx
+	deleted:    components/AiInsightModal.tsx
+	deleted:    components/CallLogsPage.tsx
+	deleted:    components/CampaignDetailPage.tsx
+	deleted:    components/CampaignsPage.tsx
+	deleted:    components/CreateCampaignModal.tsx
+	deleted:    components/CreateWorkflowModal.tsx
+	deleted:    components/DashboardPage.tsx
+	deleted:    components/EditCallLogModal.tsx
+	deleted:    components/Header.tsx
+	deleted:    components/InternalAdminPage.tsx
+	deleted:    components/KpiCard.tsx
+	deleted:    components/LeadDetailPage.tsx
+	deleted:    components/LeadSourceChart.tsx
+	deleted:    components/LeadTrendChart.tsx
+	deleted:    components/LeadsPage.tsx
+	deleted:    components/LeadsTable.tsx
+	deleted:    components/LiveConversationPage.tsx
+	deleted:    components/LoginPage.tsx
+	deleted:    components/SettingsPage.tsx
+	deleted:    components/Sidebar.tsx
+	deleted:    components/SignUpPage.tsx
+	deleted:    components/WorkflowsPage.tsx
+	deleted:    components/icons.tsx
+	deleted:    data/logo.ts
+	deleted:    data/mockData.ts
+	deleted:    index.html
+	deleted:    index.tsx
+	deleted:    metadata.json
+	deleted:    package-lock.json
+	deleted:    package.json
+	deleted:    services/geminiService.ts
+	deleted:    tsconfig.json
+	deleted:    types.ts
+	deleted:    utils/audioUtils.ts
+	deleted:    vite.config.ts
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.github/
+	.idx/
+	.vite/
+	antigravity.yaml
+	backend/
+	cloudbuild.yaml
+	docker-compose.yml
+	frontend/
+	status.txt
+	status_cmd.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
