@@ -2,6 +2,17 @@
 
 AI-powered real estate lead management system with voice outreach capabilities.
 
+## 🚀 Quick Start
+
+**New to this project? Start here:**
+
+1. **[📋 TODO Checklist](./TODO_CHECKLIST.md)** - Printable step-by-step checklist for setup
+2. **[⚡ Quick Start Guide](./QUICK_START.md)** - Detailed setup instructions (~15 min)
+
+**Already set up?** See [Setup Instructions](#setup-instructions) below.
+
+---
+
 ## Features
 
 - 🎯 **AI Lead Scoring**: Automatic lead qualification using Google Gemini

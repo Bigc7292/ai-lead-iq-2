@@ -25,7 +25,7 @@ const geminiService = {
         }
 
         try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
             const prompt = `Score lead based on profile traits. Analyze this real estate lead and provide a quality score from 0.0 to 1.0.
 
@@ -76,7 +76,7 @@ Respond with ONLY a decimal number between 0.0 and 1.0 (e.g., 0.75), nothing els
         }
 
         try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
             const prompt = `Analyze this conversation with a real estate lead and provide:
 1. A new score (0-100)
