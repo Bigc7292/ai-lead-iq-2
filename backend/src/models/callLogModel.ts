@@ -34,11 +34,30 @@ export enum CallOutcome {
 }
 
 /**
-    sentiment_score?: number; // -1.0 to 1.0
+ * Main CallLog interface
+ */
+export interface CallLog {
+    // IDs
+    id: string;
+    lead_id: string;
+    agent_id?: string;
+    minimax_session_id?: string;
+
+    // Call details
+    direction: CallDirection;
+    duration?: number;
+    started_at?: Date;
+    ended_at?: Date;
+
+    // Transcript & Analysis
+    transcript?: string;
+    summary?: string;
+    sentiment?: CallSentiment;
+    sentiment_score?: number; // -1.0 to 1.0 or 0.0 to 1.0 depending on implementation
 
     // Outcomes
     outcome?: CallOutcome;
-    follow_up_required: boolean;
+    follow_up_required?: boolean;
     follow_up_date?: Date;
 
     // Quality & Cost
@@ -54,23 +73,6 @@ export enum CallOutcome {
 
     // Timestamps
     created_at: Date;
-    started_at?: Date;
-    ended_at?: Date;
-    duration?: number;
-    transcript?: string;
-    summary?: string;
-    sentiment?: CallSentiment;
-    sentiment_score?: number;
-    outcome?: CallOutcome;
-    follow_up_required?: boolean;
-    follow_up_date?: Date;
-    call_quality_score?: number;
-    cost?: number;
-    recording_url?: string;
-    recording_duration?: number;
-    started_at?: Date;
-    ended_at?: Date;
-    metadata?: Record<string, any>;
 }
 
 /**
@@ -139,7 +141,7 @@ export function wasCallSuccessful(callLog: CallLog): boolean {
  * Type guard to check if call needs follow-up
  */
 export function needsFollowUp(callLog: CallLog): boolean {
-    return callLog.follow_up_required && (!callLog.follow_up_date || callLog.follow_up_date <= new Date());
+    return !!callLog.follow_up_required && (!callLog.follow_up_date || callLog.follow_up_date <= new Date());
 }
 
 /**

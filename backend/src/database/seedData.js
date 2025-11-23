@@ -215,58 +215,89 @@ async function seedLeads(users) {
         .select();
 
     if (error) {
+        console.error('❌ Error seeding leads:', error.message);
+        return [];
+    }
+
+    console.log(`✅ Created ${data.length} leads`);
+    return data;
+}
+
+/**
+ * Seed call logs with relationships to leads and users
  */
-        async function seedCallLogs(leads, users) {
+async function seedCallLogs(leads, users) {
+    console.log('\n📞 Seeding call logs...');
 
-            if (error) {
-                console.error('❌ Error seeding call logs:', error.message);
-                return [];
-            }
+    const agents = users.filter(u => u.role === 'agent');
 
-            console.log(`✅ Created ${data.length} call logs`);
-            return data;
-        }
+    // Create call logs linked to leads
+    const callLogsWithRelations = SAMPLE_CALL_LOGS.map((callLog, index) => {
+        const lead = leads[index % leads.length];
+        const agent = agents[index % agents.length];
 
-        /**
-         * Main seeder function
-         */
-        async function seed() {
-            console.log('🌱 Starting database seeding...\n');
-            console.log('⚠️  WARNING: This will clear all existing data!\n');
+        return {
+            ...callLog,
+            lead_id: lead.id,
+            agent_id: agent ? agent.id : null,
+            minimax_session_id: `minimax_session_${Date.now()}_${index}`,
+        };
+    });
 
-            try {
-                // Clear existing data
-                await clearData();
+    const { data, error } = await supabase
+        .from('call_logs')
+        .insert(callLogsWithRelations)
+        .select();
 
-                // Seed in order (respecting foreign key constraints)
-                const users = await seedUsers();
-                const leads = await seedLeads(users);
-                const callLogs = await seedCallLogs(leads, users);
+    if (error) {
+        console.error('❌ Error seeding call logs:', error.message);
+        return [];
+    }
 
-                console.log('\n✅ Database seeding completed successfully!');
-                console.log('\n📊 Summary:');
-                console.log(`   - Users: ${users.length}`);
-                console.log(`   - Leads: ${leads.length}`);
-                console.log(`   - Call Logs: ${callLogs.length}`);
-                console.log('\n💡 Sample queries to try:');
-                console.log('   - SELECT * FROM high_value_leads;');
-                console.log('   - SELECT * FROM lead_performance_summary;');
-                console.log('   - SELECT * FROM leads WHERE score > 0.8;');
+    console.log(`✅ Created ${data.length} call logs`);
+    return data;
+}
 
-            } catch (error) {
-                console.error('\n❌ Seeding failed:', error.message);
-                process.exit(1);
-            }
-        }
+/**
+ * Main seeder function
+ */
+async function seed() {
+    console.log('🌱 Starting database seeding...\n');
+    console.log('⚠️  WARNING: This will clear all existing data!\n');
 
-        // Run seeder if executed directly
-        if (require.main === module) {
-            seed()
-                .then(() => process.exit(0))
-                .catch((error) => {
-                    console.error('Fatal error:', error);
-                    process.exit(1);
-                });
-        }
+    try {
+        // Clear existing data
+        await clearData();
 
-        module.exports = { seed, clearData, seedUsers, seedLeads, seedCallLogs };
+        // Seed in order (respecting foreign key constraints)
+        const users = await seedUsers();
+        const leads = await seedLeads(users);
+        const callLogs = await seedCallLogs(leads, users);
+
+        console.log('\n✅ Database seeding completed successfully!');
+        console.log('\n📊 Summary:');
+        console.log(`   - Users: ${users.length}`);
+        console.log(`   - Leads: ${leads.length}`);
+        console.log(`   - Call Logs: ${callLogs.length}`);
+        console.log('\n💡 Sample queries to try:');
+        console.log('   - SELECT * FROM high_value_leads;');
+        console.log('   - SELECT * FROM lead_performance_summary;');
+        console.log('   - SELECT * FROM leads WHERE score > 0.8;');
+
+    } catch (error) {
+        console.error('\n❌ Seeding failed:', error.message);
+        process.exit(1);
+    }
+}
+
+// Run seeder if executed directly
+if (require.main === module) {
+    seed()
+        .then(() => process.exit(0))
+        .catch((error) => {
+            console.error('Fatal error:', error);
+            process.exit(1);
+        });
+}
+
+module.exports = { seed, clearData, seedUsers, seedLeads, seedCallLogs };

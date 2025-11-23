@@ -63,7 +63,26 @@ const testRedisConnection = async () => {
     }
 };
 
+// Simple Redis config for BullMQ (used by batch calls)
+const redisConfig = {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT) || 6379,
+    password: process.env.REDIS_PASSWORD,
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    retryStrategy: (times) => {
+        // Limit retries to reduce spam when Redis is down
+        if (times > 3) {
+            console.warn('⚠️  Redis unavailable - batch call functionality disabled');
+            return null; // Stop retrying
+        }
+        const delay = Math.min(times * 1000, 3000);
+        return delay;
+    },
+};
+
 module.exports = {
     getRedisClient,
-    testRedisConnection
+    testRedisConnection,
+    redisConfig
 };

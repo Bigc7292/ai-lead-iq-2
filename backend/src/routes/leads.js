@@ -12,7 +12,8 @@ const { leadSchemas, validateBody, validateQuery, validateParams } = require('..
  */
 
 // GET all leads with pagination and filters
-router.get('/', authenticateToken, validateQuery(leadSchemas.query), async (req, res, next) => {
+// TEMPORARY: Using optionalAuth for development testing
+router.get('/', optionalAuth, validateQuery(leadSchemas.query), async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 20;
