@@ -43,6 +43,7 @@ app.use((req, res, next) => {
 app.use('/api/health', healthRouter);
 app.use('/api/leads', leadsRouter);
 app.use('/api/batch-calls', batchCallsRouter);
+app.use('/api/vapi', require('./routes/vapiWebhooks'));
 
 // 404 handler
 app.use((req, res) => {
